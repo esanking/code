@@ -1,0 +1,46 @@
+import requests as req
+from bs4 import BeautifulSoup
+
+def get_webpage(url,head):
+    html_page = req.get(url,headers=head)
+
+
+    if html_page.status_code != 200:
+        print("沒有讀取到,就是404",html_page.status_code)
+        return None
+    else:
+        return html_page.text
+dcard = input(["food","travel","/"])
+
+
+head={"user-agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36"}
+site = "https://www.dcard.tw/f/"+dcard
+
+
+
+
+file = open("dcard.text",mode="w",encoding="utf-8")
+n=int(input("想搜尋幾篇 max=7:    "))
+if dcard=="food":
+    file.write("美食版"+"\n"+"\n")
+elif dcard=="travel":
+    file.write("旅遊版"+"\n"+"\n")
+elif dcard=="/":
+    file.write("總版"+"\n"+"\n")
+
+if n<=7:
+    for x in range(n):
+        html = get_webpage(site,head)
+        soup = BeautifulSoup(html,"html.parser")
+        zx = soup.find_all("a", class_="sc-1v1d5rx-4 cJzlcl")[x].find("span").text
+        price = soup.find_all("div",class_="sc-1v1d5rx-5 kPePTy")[x].find("span").text    #只爬單個地方
+        print("標題:  ",zx,":")
+        print("               ")
+        print("內容:   ",price)
+        print("=============")
+        
+        file.write("標題:  "+zx+":"+"\n"+"\n")
+        file.write("內容:   "+price+"\n"+"\n"+"================================="+"\n")
+
+else:
+    print("not")
